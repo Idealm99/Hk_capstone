@@ -1,0 +1,60 @@
+body {
+    font-family: 'Roboto', sans-serif;
+    background: linear-gradient(135deg, #8E2DE2, #4A00E0);
+    color: #ffffff;
+  }
+  
+  .container {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  h1 {
+    font-size: 3rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  }
+  
+  .lead {
+    font-size: 1.5rem;
+    font-weight: 400;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+  }
+  
+  .btn {
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    font-size: 1.2rem;
+    font-weight: 500;
+    padding: 12px 30px;
+    border-radius: 50px;
+  }
+  
+  .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+  }
+  
+  .btn-primary {
+    background-color: #6C63FF;
+    border-color: #6C63FF;
+  }
+  
+  .btn-primary:hover {
+    background-color: #544DFF;
+    border-color: #544DFF;
+  }
+  
+  .btn-light {
+    background-color: #fff;
+    border-color: #fff;
+    color: #4A00E0;
+    border: 2px solid #4A00E0;
+  }
+  
+  .btn-light:hover {
+    background-color: #4A00E0;
+    color: #fff;
+    border-color: #4A00E0;
+  }

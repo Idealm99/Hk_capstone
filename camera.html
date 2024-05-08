@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Face Fit - Camera</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.4/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js" crossorigin="anonymous"></script>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8f8f8;
+            color: #333;
+        }
+        .navbar {
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .navbar-brand {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+        }
+        .camera-section {
+            background-color: #fff;
+            padding: 100px 0;
+            text-align: center;
+        }
+        .camera-section h1 {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+        .camera-section p {
+            font-size: 18px;
+            color: #777;
+            margin-bottom: 40px;
+        }
+        .video-container {
+            position: relative;
+            width: 100%;
+            max-width: 640px;
+            margin: 0 auto;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        #video {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        #canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        .btn-primary {
+            background-color: #ff4f5a;
+            border-color: #ff4f5a;
+            color: #fff;
+            font-weight: 600;
+            padding: 12px 30px;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            background-color: #ff3d4a;
+            border-color: #ff3d4a;
+        }
+        .btn-secondary {
+            background-color: #f8f8f8;
+            border-color: #f8f8f8;
+            color: #333;
+            font-weight: 600;
+            padding: 12px 30px;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+        }
+        .btn-secondary:hover {
+            background-color: #ebebeb;
+            border-color: #ebebeb;
+        }
+        .footer {
+            background-color: #f8f8f8;
+            padding: 30px 0;
+            text-align: center;
+        }
+        .footer p {
+            font-size: 14px;
+            color: #777;
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">Face Fit</a>
+        </div>
+    </nav>
+
+    <section class="camera-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h1>Webcam Face Detection</h1>
+                    <p>Use your webcam to capture your face and get personalized hairstyle recommendations.</p>
+                    <div class="video-container">
+                        <video id="video" autoplay></video>
+                        <canvas id="canvas"></canvas>
+                    </div>
+                    <div class="d-grid gap-3 d-sm-flex justify-content-sm-center mt-4">
+                        <button class="btn btn-primary btn-lg px-4 gap-3" onclick="captureImage()">
+                            <i class="bi bi-camera-fill"></i> Capture Image
+                        </button>
+                        <a href="index.html" class="btn btn-secondary btn-lg px-4">
+                            <i class="bi bi-arrow-left"></i> Back to Home
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2023 Face Fit. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // JavaScript code for camera and face detection functionality
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const canvasCtx = canvas.getContext('2d');
+
+        function onResults(results) {
+            canvasCtx.save();
+            canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
+            canvasCtx.drawImage(results.image, 0, 0, canvas.width, canvas.height);
+            if (results.multiFaceLandmarks) {
+                for (const landmarks of results.multiFaceLandmarks) {
+                    drawConnectors(canvasCtx, landmarks, FACEMESH_TESSELATION, { color: '#C0C0C070', lineWidth: 1 });
+                    drawConnectors(canvasCtx, landmarks, FACEMESH_RIGHT_EYE, { color: '#FF3030' });
+                    drawConnectors(canvasCtx, landmarks, FACEMESH_RIGHT_EYEBROW, { color: '#FF3030' });
+                    drawConnectors(canvasCtx, landmarks, FACEMESH_LEFT_EYE, { color: '#30FF30' });
+                    drawConnectors(canvasCtx, landmarks, FACEMESH_LEFT_EYEBROW, { color: '#30FF30' });
+                    drawConnectors(canvasCtx, landmarks, FACEMESH_FACE_OVAL, { color: '#E0E0E0' });
+                    drawConnectors(canvasCtx, landmarks, FACEMESH_LIPS, { color: '#E0E0E0' });
+                }
+            }
+            canvasCtx.restore();
+        }
+
+        const faceMesh = new FaceMesh({
+            locateFile: (file) => {
+                return `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`;
+            }
+        });
+
+        faceMesh.setOptions({
+            maxNumFaces: 1,
+            minDetectionConfidence: 0.5,
+            minTrackingConfidence: 0.5
+        });
+
+        faceMesh.onResults(onResults);
+
+        async function startCamera() {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            video.srcObject = stream;
+            video.onloadedmetadata = () => {
+                video.play();
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                detectFace();
+            };
+        }
+
+        async function detectFace() {
+            await faceMesh.send({ image: video });
+            requestAnimationFrame(detectFace);
+        }
+
+        function captureImage() {
+            // Implement the logic to capture the image and process it further
+            console.log('Image captured');
+        }
+
+        startCamera();
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
